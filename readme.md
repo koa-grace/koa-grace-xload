@@ -13,7 +13,7 @@ proxy(app, options)
 ```
 - app: {Object} koa instance.
 - options: {Object|String->root}
-  - api: {String} api配置项，例如local对应http://localhost:3000，则为：api:{local:'http://localhost:3000'}
+  - path: {String} 文件存放路径
 
 **app.js**
 
@@ -21,47 +21,44 @@ proxy(app, options)
 'use strict';
 
 var koa = require('koa');
-var proxy = require('..');
+var xload = require('..');
 
 var app = koa();
 
 // 配置api
-app.use(proxy(app, {
-  api : {
-    github : 'https://avatars.githubusercontent.com/'
+app.use(xload(app, {
+  path: './data',
+  upload: {
+    /*
+        encoding: 'utf-8',
+        maxFieldsSize: 2 * 1024 * 1024,
+        maxFields: 1000*/
+  },
+  download: {
+
   }
 }));
 
 app.use(function*() {
-  let data ;
+  let data;
 
   // 数据请求
-  if(this.path == '/data/1'){
-    this.body = {
-      user_id:'111111'
-    }
+  if (this.path == '/download') {
+    yield this.download('1.pic.jpg');
     return;
-  }else if(this.path == '/data/2'){
-    this.body = {
-      user_id:'222222'
-    }
+  } else if (this.path == '/upload') {
+    this.body = yield this.upload();
     return;
   }
 
 
-  // 代理数据
-  yield this.proxy({
-    data1 : 'http://127.0.0.1:3000/data/1',
-    data2 : 'http://127.0.0.1:3000/data/2',
-  });
-  this.body = this.backData || 'test';
-
-  // 代理请求
-  // yield this.fetch('github:u/1962352?v=3');
-  // yield this.fetch('http://127.0.0.1:9080/bg_3_s.jpg');
-  // data = yield this.fetch('http://test.mlsfe.biz/home');
-
-  console.log('request done');
+  this.body = '' +
+    '<form action="/upload" enctype="multipart/form-data" method="post">' +
+    '<input type="text" name="title"><br>' +
+    '<input type="file" name="upload1" multiple="multiple"><br>' +
+    '<input type="file" name="upload2" multiple="multiple"><br>' +
+    '<input type="submit" value="Upload">' +
+    '</form>';
 });
 
 app.listen(3000, function() {
