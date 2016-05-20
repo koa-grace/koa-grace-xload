@@ -1,6 +1,6 @@
 {
   "name": "koa-grace-xload",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "KOA-grace 当前文件系统下upload/download中间件",
   "main": "index.js",
   "scripts": {
