@@ -26,7 +26,7 @@ function xload(app, options) {
     Object.assign(this, {
       upload: function*(opt) {
         // 注入配置项
-        let config = util._extend({
+        let config = Object.assign({
           uploadDir: path,
           encoding: 'utf-8',
           maxFieldsSize: 2 * 1024 * 1024,
@@ -39,7 +39,7 @@ function xload(app, options) {
       },
       download: function*(filename, opt) {
         // 注入配置项
-        let config = util._extend({
+        let config = Object.assign({
           downloadDir: path,
         }, options.upload, opt);
 
